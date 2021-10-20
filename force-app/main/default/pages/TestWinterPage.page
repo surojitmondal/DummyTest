@@ -1,0 +1,8 @@
+<apex:page standardController="Opportunity" extensions="OpportunityQuickAction">
+  <!-- Begin Default Content REMOVE THIS -->
+  <h1>Congratulations</h1>
+  This is your new Page
+ <apex:form >
+      <apex:commandButton action="{!redirectToOpp}" value="Next" styleClass="slds-button slds-button_brand"/> 
+ </apex:form>
+</apex:page>

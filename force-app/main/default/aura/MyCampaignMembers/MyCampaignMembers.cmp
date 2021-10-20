@@ -1,0 +1,288 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickActionWithoutHeader">
+    <ltng:require styles="/resource/slds202/assets/styles/salesforce-lightning-design-system.css"/>
+    <aura:attribute name="campaignStatusValuesMap" type="Map"/>
+    <aura:attribute name="allCampaignMembers" type="List" default="[]"/>
+    <aura:attribute name="campaignMembers" type="List" default="[]"/>
+    <aura:attribute name="accountNames" type="List" default="[]"/>
+    <aura:attribute name="selectedAccountName" type="String" default="All Accounts"/>
+    <aura:attribute name="campaignNames" type="List" default="[]"/>
+    <aura:attribute name="selectedCampaignName" type="String" default="All Campaigns"/>
+    <aura:attribute name="campaignMemberStatuses" type="List" default="[]"/>
+    <aura:attribute name="selectedCampaignMemberStatus" type="String" default="All Statuses"/>
+    <aura:attribute name="initialLoad" type="boolean" default="true"/>
+    <aura:attribute name="arrowDirection" type="string" default="arrowup"/>
+    <aura:attribute name="isAsc" type="boolean" default="true"/> 
+    <aura:attribute name="selectedTabsoft" type="string" default="memberCreatedDate"/>
+    <aura:attribute name = "selectedDescription" type="string" default=""/>
+    <aura:attribute name = "selectedCampaignId" type="string" default=""/>
+    <aura:attribute name = "pageSize" type="Integer" default="5"/>
+    <aura:attribute name = "currentPageNumber" type="Integer" default="1"/>
+    <aura:attribute name = "totalPages" type="Integer" default="1"/>
+    <aura:attribute name="popupHeader" type="String" default="ERROR"/>
+    <aura:attribute name="popupTheme" type="String" default="slds-theme--error"/>
+    <aura:attribute name="popupMessage" type="String" default="Something went wrong."/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <div aura:id="spinner_box" class="slds-align_absolute-center">
+        <lightning:spinner variant="brand" size="medium"/>
+    </div>
+    <!--<div class="slds-align_absolute-center">
+    <lightning:spinner aura:id="spinner" variant="brand" size="large" class="slds-hide"/>
+    </div>-->
+    
+    <!-- show the error message-->
+    <div aura:id="modal_popup" class="slds-hide">
+        <div role="alertdialog" tabindex="-1" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt">
+            <div class="slds-modal__container">
+                <div class="{!'slds-modal__header ' + v.popupTheme + ' slds-theme--alert-texture'}">
+                    <h2 class="slds-text-heading--medium" id="prompt-heading-id">{!v.popupHeader}</h2>
+                </div>
+                <div class="slds-modal__content slds-p-around--medium">
+                    <ui:outputText value="{!v.popupMessage}"/>
+                </div>
+                <div class="slds-modal__footer slds-theme--default">
+                    <lightning:button variant="brand" label="Close" onclick="{!c.closeWarningBox}"/>
+                </div>
+            </div>
+        </div>
+        <!-- Pop up the Decription Box -->
+        <div class="slds-backdrop slds-backdrop--open"></div>
+    </div>
+    <div class="slds-hide" aura:id="descriptionModal">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Update Description </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning:textarea name="input1" label="Description" value="{!v.selectedDescription}"/>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="Cancel" variant="destructive" onclick="{!c.cancelDescription}"/>
+                    <lightning:button label="Save" variant="brand" onclick="{!c.updateDescription}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+    <div class="slds slds-container--center slds-box" style="margin:10px">
+        <!--<div class="slds-page-header">
+            <div class="slds-media">
+                <div class="slds-media__figure">
+                    <lightning:icon iconName="standard:client" size="large" alternativeText="Campaign Member Outreach"/>
+                </div>
+                <div class="slds-media__body">
+                    <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Campaign Member Outreach">Campaign Member Outreach</h1>
+                </div>
+            </div>
+        </div>-->
+        <b>Campaign Member Outreach - My To Do-List</b>
+        <div class="slds-container--center slds-box" style="margin-top:0px">
+            <div class="slds-page-header" style="margin-bottom:2px">
+                <div >
+                    <div >
+                        <b>Select Filters:</b>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer ">   
+                            <tr class="slds-text-title_caps">
+                                <th scope="col" style="width:50%">
+                                    <div  style="width:50%">
+                                        <ui:inputSelect aura:id="name-header-select" class="slds-select" label="Account Name:" value="{!v.selectedAccountName}" change= "c.refreshCampaignMembers">
+                                            <aura:iteration items="{!v.accountNames}" var="accountName">
+                                                <ui:inputSelectOption text="{!accountName}" label="{!accountName}"/>
+                                            </aura:iteration>
+                                        </ui:inputSelect>
+                                    </div>
+                                </th>
+                                <th scope="col" style="width:50%">
+                            	<div style="width:50%">                       
+                                <ui:inputSelect aura:id="name-header-select" class="slds-select" label ="Campaign Name:" value="{!v.selectedCampaignName}"  change= "c.refreshCampaignMembers">
+                                        <aura:iteration items="{!v.campaignNames}" var="campaignName">
+                                            <ui:inputSelectOption text="{!campaignName}" label="{!campaignName}"/>
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>
+                                </th>                                
+                                <!--<th scope="col" style="width:33%">
+                            	<div style="width:50%" >
+                                    <ui:inputSelect aura:id="name-header-select" class="slds-select" label="Member Status:" value="{!v.selectedCampaignMemberStatus}"  change= "c.refreshCampaignMembers">
+                                        <aura:iteration items="{!v.campaignMemberStatuses}" var="campaignMemberStatuse">
+                                            <ui:inputSelectOption text="{!campaignMemberStatuse}" label="{!campaignMemberStatuse}"/>
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>
+                                </th>-->
+                            </tr>
+                        </table>                                     
+                    </div>
+                </div>
+              <!--  <div style="text-align:center;Height:15px">
+                    <lightning:buttonGroup>
+                        <lightning:button label="Save" variant="brand" onclick="{!c.save}"/>
+                        <lightning:button label="Cancel" variant="destructive" onclick="{!c.cancel}"/>
+                    </lightning:buttonGroup>
+                </div>-->
+            </div>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_striped" >
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th class="slds-is-sortable slds-text-title--caps" scope="col" onclick="{!c.sortName}">
+                            <a href="javascript:void(0);" class="slds-th__action slds-text-link--reset">
+                                <span class="slds-assistive-text">Sort</span>
+                                <span class="slds-truncate" title="Name">Name</span>  
+                                <aura:if isTrue="{! and(v.arrowDirection == 'arrowdown', v.selectedTabsoft == 'name') }">&nbsp;  &#9660; </aura:if>  
+                                <aura:if isTrue="{! and(v.arrowDirection != 'arrowdown', v.selectedTabsoft == 'name') }"> &nbsp;  &#9650; </aura:if>                        
+                            </a>
+                        </th>
+                        <th class="slds-is-sortable slds-text-title--caps" scope="col" onclick="{!c.sortAccountName}">
+                            <a href="javascript:void(0);" class="slds-th__action slds-text-link--reset">
+                                <span class="slds-assistive-text">Sort</span>
+                                <span class="slds-truncate" title="Name">Account Name</span>  
+                                <aura:if isTrue="{! and(v.arrowDirection == 'arrowdown', v.selectedTabsoft == 'accountName') }">&nbsp;  &#9660; </aura:if>  
+                                <aura:if isTrue="{! and(v.arrowDirection != 'arrowdown', v.selectedTabsoft == 'accountName') }"> &nbsp;  &#9650; </aura:if>                        
+                            </a>
+                        </th>
+                     <!--   <th class="slds-is-sortable slds-text-title&&caps" scope="col" onclick="{!c.sortPhone}">
+                            <a href="javascript:void(0);" class="slds-th__action slds-text-link&&reset">
+                                <span class="slds-assistive-text">Sort</span>
+                                <span class="slds-truncate" title="Name">Phone</span>  
+                                <aura:if isTrue="{! and(v.arrowDirection == 'arrowdown', v.selectedTabsoft == 'phone') }">&nbsp;  &#9660; </aura:if>  
+                                <aura:if isTrue="{! and(v.arrowDirection != 'arrowdown', v.selectedTabsoft == 'phone') }"> &nbsp;  &#9650; </aura:if>                        
+                            </a>
+                        </th>
+                        <th class="slds-is-sortable slds-text-title&&caps" scope="col" onclick="{!c.sortEmail}">
+                            <a href="javascript:void(0);" class="slds-th&&action slds-text-link&&reset">
+                                <span class="slds&assistive&text">Sort</span>
+                                <span class="slds-truncate" title="Name">Email</span>  
+                                <aura:if isTrue="{! and(v.arrowDirection == 'arrowdown', v.selectedTabsoft == 'email') }">&nbsp;  &#9660; </aura:if>  
+                                <aura:if isTrue="{! and(v.arrowDirection != 'arrowdown', v.selectedTabsoft == 'email') }"> &nbsp;  &#9650; </aura:if>                        
+                            </a>
+                        </th>
+					-->
+                        <th class="slds-is-sortable slds-text-title--caps" scope="col" onclick="{!c.sortCampaignName}">
+                            <a href="javascript:void(0);" class="slds-th__action slds-text-link--reset">
+                                <span class="slds-assistive-text">Sort</span>
+                                <span class="slds-truncate" title="Name">Campaign Name</span>  
+                                <aura:if isTrue="{! and(v.arrowDirection == 'arrowdown', v.selectedTabsoft == 'campaignName') }">&nbsp;  &#9660; </aura:if>  
+                                <aura:if isTrue="{! and(v.arrowDirection != 'arrowdown', v.selectedTabsoft == 'campaignName') }"> &nbsp;  &#9650; </aura:if>                        
+                            </a>
+                        </th>
+                        <th class="slds-is-sortable slds-text-title--caps" scope="col" onclick="{!c.sortStatus}">
+                            <a href="javascript:void(0);" class="slds-th__action slds-text-link--reset">
+                                <span class="slds-assistive-text">Sort</span>
+                                <span class="slds-truncate" title="Name">Status</span>  
+                                <aura:if isTrue="{! and(v.arrowDirection == 'arrowdown', v.selectedTabsoft == 'status') }">&nbsp;  &#9660; </aura:if>  
+                                <aura:if isTrue="{! and(v.arrowDirection != 'arrowdown', v.selectedTabsoft == 'status') }"> &nbsp;  &#9650; </aura:if>                        
+                            </a>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="New Status">New Status</div>
+                        </th>
+                        
+                        <th scope="col">
+                            <div class="slds-truncate" title="Campaign Notes">Campaign Notes</div>
+                        </th>
+                        <!--<th scope="col">
+                            <div class="slds-truncate" title="Campaign Questions ">Campaign Questions </div>
+                        </th>
+						
+                        <th class="slds-is-sortable slds-text-title&&caps" scope="col" onclick="{!c.sortMembCreatedDate}">
+                        	<a href="javascript:void(0);" class="slds-th__action slds-text-link&&reset">
+              					<span class="slds-assistive-text">Sort</span>
+                                <span class="slds-truncate" title="Name">Member Created Date</span>  
+                                <aura:if isTrue="{! and(v.arrowDirection == 'arrowdown', v.selectedTabsoft == 'memberCreatedDate') }">&nbsp;  &#9660; </aura:if>  
+                                <aura:if isTrue="{! and(v.arrowDirection != 'arrowdown', v.selectedTabsoft == 'memberCreatedDate') }"> &nbsp;  &#9650; </aura:if>                        
+                            </a>
+                        </th>-->
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.campaignMembers}" var="campaignMember" indexVar="index">
+                        <tr>
+                            <td data-label="Name ">
+                                <div class="slds-truncate">
+                                    <ui:outputURL aura:id="memberId" label="{!campaignMember.Name}" value="{!campaignMember.Url}" target="_blank"/>
+                                </div>
+                            </td>
+                            <td data-label="Account Name">
+                                <div class="slds-truncate">
+                                    <ui:outputText value="{!campaignMember.AccountName}"/>
+                                </div>
+                            </td>
+                          <!--  <td data-label="Phone">
+                                <div class="slds-truncate">
+                                    <ui:outputText value="{!campaignMember.Phone}"/>
+                                </div>
+                            </td>
+                            <td data-label="Email">
+                                <div class="slds-truncate">
+                                    <ui:outputURL aura:id="memberId" label="{!campaignMember.Email}" value="{!campaignMember.EmailUrl}"/>
+                                </div>
+                            </td>
+       -->
+                            <td data-label="Campaign Name">
+                                <div class="slds-truncate">
+                                    <ui:outputURL aura:id="memberId" label="{!campaignMember.CampaignName}" value="{!campaignMember.CampaignUrl}" target="_blank"/>
+                                </div>
+                            </td>
+                            <td data-label="Current Status">
+                                <div class="slds-truncate">
+                                    <ui:outputText value="{!campaignMember.OldStatus}"/>
+                                </div>
+                            </td>
+                            <td data-label="New Status" >
+                                <aura:if isTrue="{!campaignMember.CampaignMemberId !=null}">
+                                    <div class="slds-truncate" >
+                                        <div class="slds-form-element__control">
+                                            <div >
+                                                <ui:inputSelect aura:id="status-select" class="slds-select" value="{!campaignMember.NewStatus}" >
+                                                    <aura:iteration items="{!campaignMember.StatusValues}" var="campaignStatusValue">
+                                                        <ui:inputSelectOption text="{!campaignStatusValue}" label="{!campaignStatusValue}"/>
+                                                    </aura:iteration>
+                                                </ui:inputSelect>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </aura:if>
+                            </td>
+                            <td data-label="Campaign Notes">
+                                <div class="slds-truncate blockBox">
+                                    <ui:outputText value="{!campaignMember.callDescriptionNotesTrimmed}" dblclick="c.editDescription" title="{!campaignMember.CallDescriptionNotes}" class="{!'blockBox ' + campaignMember.CampaignMemberId}"/>
+                                </div>
+                            </td>
+                            <!--
+                            <td data-label="Campaign Questions">
+                                <aura:if isTrue="{! and(campaignMember.CampaignMemberId !=null, campaignMember.RecordTypeId == '012i00000016Te7AAE')}">
+                                <div class="slds-truncate">
+                                    <ui:outputURL aura:id="questionId" label="Take Questionaire" value="{!campaignMember.CampaignQuestions}" target="_blank"/>                                    
+                                </div>
+                                </aura:if>
+                            </td>
+       
+                            <td data-label="Created Date">
+                                <div class="slds-truncate">
+                                    <ui:outputText value="{!campaignMember.CreatedDate}" />
+                                </div>
+                            </td> -->
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+            <div style="text-align:center;Height:15px">
+                    <lightning:buttonGroup>
+                        <lightning:button label="Save" variant="brand" onclick="{!c.save}"/>
+                        <lightning:button label="Cancel" variant="destructive" onclick="{!c.cancel}"/>
+                    </lightning:buttonGroup>
+            </div>
+            <div style="margin-top:20px">
+                <div style="text-align:center">
+                    <lightning:button label="First" variant="neutral" onclick="{!c.goFirst}" disabled="{!v.currentPageNumber == 1}"/>
+                    <lightning:button label="Previous" variant="neutral" onclick="{!c.goPrevious}" disabled="{!v.currentPageNumber == 1}"/>
+                    Showing {!v.currentPageNumber} of {!v.totalPages} pages.
+                    <lightning:button label="Next" variant="neutral" onclick="{!c.goNext}" disabled="{!v.currentPageNumber == v.totalPages}"/>
+                    <lightning:button label="Last" variant="neutral" onclick="{!c.goLast}" disabled="{!v.currentPageNumber == v.totalPages}"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</aura:component>

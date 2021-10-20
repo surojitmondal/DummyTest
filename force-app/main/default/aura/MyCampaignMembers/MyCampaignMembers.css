@@ -1,0 +1,12 @@
+.THIS .blockBox {
+    display : block;
+    width : 100%;
+    min-height : 20px;
+}
+.THIS.slds-spinner_container {  
+  z-index: 10000;
+  position: fixed;   
+}
+.THIS.hideDiv {
+    display: none;
+}

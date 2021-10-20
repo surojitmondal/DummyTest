@@ -1,0 +1,26 @@
+<aura:component controller="JourneyStepClass" 
+                implements="force:appHostable,flexipage:availableforAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickAction" access="global">
+    <aura:attribute name="statusVal" type="String" />
+    <aura:attribute name="recordId" type="Id" />
+    
+  	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="JSrec" type="Journey_Step__c" default="{'sobjectType': 'Journey_Step__c',
+                         'Bundle_Id__c': '',
+                         'JourneyName__c': ''                         
+                       }"/>
+    <div class="container-fluid">
+        <h3>Journey Step Detail</h3><br/>
+        <div class="form-group">
+            <label>Bundle Id</label>
+            <ui:inputText class="form-control" value="{!v.JSrec.Bundle_Id__c}"/>
+        </div>
+        <div class="form-group">
+            <label>Journey Name</label>
+            <ui:inputText class="form-control" value="{!v.JSrec.JourneyName__c}"/>
+        </div>
+        
+    </div>
+    <div class="col-md-4 text-center">
+        <ui:button class="btn btn-default" press="{!c.saveJS}">Save</ui:button>
+  	</div>
+</aura:component>

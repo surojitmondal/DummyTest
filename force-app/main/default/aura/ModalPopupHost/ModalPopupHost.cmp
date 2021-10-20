@@ -1,0 +1,15 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader">
+    <div class="slds-m-around_none slds-p-around_none">
+    	<c:childComponent></c:childComponent>
+    </div>
+    <aura:html tag="style">  
+        .cuf-content{
+            padding:0px !important;
+        }
+        div[role="dialog"] .modal-body {
+            padding : 0px !important;
+        	height : auto !important;
+        	max-height : auto !important;
+        }
+    </aura:html> 
+</aura:component>

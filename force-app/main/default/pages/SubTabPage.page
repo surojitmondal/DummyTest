@@ -1,0 +1,206 @@
+<apex:page standardController="Account" standardStylesheets="false" docType="html-5.0" showQuickActionVfHeader="false" sidebar="false" >
+    <div class="slds" xlmns="http://www.w3.org/200/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+       <!-----TABS----->
+                    <div id="slds-tabs">
+                        <ul class="slds-tabs--default__nav" role="tablist">
+                            <li id="PoliciesTab" class="slds-show slds-tabs--default__item slds-text-heading--medium slds-active" title="Click here to view Policies" role="presentation" style="font-weight:bold;">
+                                <a class="slds-tabs--default__link" href="" role="tab" tabindex="0" aria-selected="true" aria-controls="tab-default-1" id="tab-default-1__item" onclick="">
+                                    Policies/Accounts
+                                </a>
+                            </li>
+                            <li id="BillingTab" class="slds-show slds-tabs--default__item slds-text-heading--medium" title="Click here to view Billing" role="presentation" style="font-weight:bold;">
+                                <a class="slds-tabs--default__link" href="" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-2" id="tab-default-2__item" onclick="">
+                                    Billing
+                                </a>
+                            </li>
+                            <li id="ClaimsTab" class="slds-show slds-tabs--default__item slds-text-heading--medium" title="Click here to view Claims" role="presentation" style="font-weight:bold;">
+                                <a class="slds-tabs--default__link" href="" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-3" id="tab-default-3__item" onclick="">
+                                    Claims
+                                </a>
+                            </li>
+                            <li id="ABSActivitiesTab" class="slds-show slds-tabs--default__item slds-text-heading--medium" title="Click here to view ABS Activities" role="presentation" style="font-weight:bold;">
+                                <a class="slds-tabs--default__link" href="" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-4" id="tab-default-4__item" onclick="">
+                                    ABS Activities
+                                </a>
+                            </li>
+                        </ul>                        
+                    </div> 
+        <!----Policies Tab---->
+                    <div id="tab-default-1" class="slds-tabs--default__content slds-show" role="tabpanel" aria-labelledby="tab-default-1__item">
+                        <apex:outputPanel id="policies1">                            
+                            
+                            <apex:outputPanel >
+                                <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-no-row-hover slds-scrollable slds-max-medium-table--stacked-horizontal">                                  
+                                </table>
+                            </apex:outputPanel>
+                        </apex:outputPanel>                        
+                    </div>
+                    <!--------
+                    public with sharing class VFP_TabPageController {
+    
+    private final Account accnt;
+    public List<customerWrapper> customerList{get;set;}
+    public List<invoiceWrapper> invoicesList{get;set;}
+    public List<orderWrapper> ordersList{get;set;}
+    
+    List<Customers__x> customerExtList = new List<Customers__x>();
+    List<Invoices__x> invoicesExtList = new List<Invoices__x>();
+    List<Orders__x> orderExtList = new List<Orders__x>();
+    
+    public String strMessage{get;set;}
+    public String orderID{get;set;}
+    public String recordID {get; set;}
+    public String tabNameForDetails{get;set;}
+    
+    public VFP_TabPageController (Apexpages.StandardController stdController){
+        
+        strMessage = '';
+        Account acc = (Account)stdController.getRecord();
+        if(acc.id !=null){
+            this.accnt =[Select id,Client_Identifier__c
+                         FROM Account 
+                         Where id =:acc.id];
+        }
+    }
+    
+    
+    public void fetchInvoices(){
+        invoicesList = new List<invoiceWrapper>();
+        if(invoicesList.isEmpty()){            
+            try{
+                invoicesExtList = [SELECT CustomerID__c,
+                                   CustomerName__c,
+                                   ProductID__c,
+                                   Salesperson__c,
+                                   ShipPostalCode__c
+                                   FROM Invoices__x 
+                                   WHERE CustomerID__c =:accnt.Client_Identifier__c];
+                if(invoicesExtList.isEmpty()){
+                    strMessage = 'No Records to Display.';
+                }
+                else
+                    strMessage='';
+                for(Invoices__x cust: invoicesExtList){
+                    invoiceWrapper custWrap = new invoiceWrapper();
+                    custWrap.customerID = cust.CustomerID__c;
+                    custWrap.customerName = cust.CustomerName__c;
+                    custWrap.productID = cust.ProductID__c;
+                    custWrap.salesperson = cust.Salesperson__c;
+                    custWrap.shipPostalCode = cust.ShipPostalCode__c;
+                    invoicesList.add(custWrap);
+                }
+            }
+            Catch(Exception ex){
+                strMessage = String.valueOf(ex);
+            } 
+        }            
+    }
+    
+    public void fetchCustomers(){
+        customerList = new List<customerWrapper>();
+        try{
+            customerExtList = [SELECT CustomerID__c,
+                               ContactName__c,
+                               ContactTitle__c,
+                               Phone__c
+                               FROM Customers__x 
+                               WHERE CustomerID__c =:accnt.Client_Identifier__c];
+            if(customerExtList.size() ==0){
+                strMessage = 'No Records to Display.';
+            }
+            else{
+                strMessage='';
+                for(Customers__x cust: customerExtList){
+                    customerWrapper custWrap = new customerWrapper();
+                    custWrap.customerID = cust.CustomerID__c;
+                    custWrap.contactName = cust.ContactName__c;
+                    custWrap.contactTitle = cust.ContactTitle__c;
+                    custWrap.phone = cust.Phone__c;
+                    customerList.add(custWrap);
+                }
+            }
+            
+        }
+        Catch(Exception ex){
+            strMessage = String.valueOf(ex);
+        }     
+    }
+    
+    public void fetchOrders(){
+        ordersList = new List<orderWrapper>();
+        if(ordersList.isEmpty()){            
+            try{
+                orderExtList = [SELECT CustomerID__c,
+                                EmployeeID__c,
+                                RequiredDate__c,
+                                ShipCountry__c,
+                                OrderID__c
+                                FROM Orders__x 
+                                WHERE CustomerID__c =:accnt.Client_Identifier__c];
+                if(orderExtList.isEmpty()){
+                    strMessage = 'No Records to Display.';
+                }
+                else
+                    strMessage='';
+                for(Orders__x cust: orderExtList){
+                    orderWrapper custWrap = new orderWrapper();
+                    custWrap.customerID = cust.CustomerID__c;
+                    custWrap.employeeID = cust.EmployeeID__c;
+                    custWrap.requiredDate = cust.RequiredDate__c;
+                    custWrap.shipCountry = cust.ShipCountry__c;
+                    custWrap.orderID = cust.OrderID__c;
+                    ordersList.add(custWrap);
+                }
+            }
+            Catch(Exception ex){
+                strMessage = String.valueOf(ex);
+            }
+        }     
+    }
+    
+    public void getExternalOrderDetailsRecordId(){         
+        if(!String.isEmpty(orderID)){
+            //String select_query = 'SELECT Id from Order_Details__x WHERE OrderID__c = '+ orderID +' limit 1'; 
+            String select_query = 'SELECT Id from Orders__x WHERE OrderID__c =\''+ orderID +'\' limit 1';               
+            Sobject details = Database.query(select_query);           
+            recordID = details.id;
+        }
+    }
+    /*public PageReference getExternalOrderDetailsRecordId(){         
+        if(!String.isEmpty(orderID)){
+            String select_query = 'SELECT Id from Orders__x WHERE OrderID__c =\''+ orderID +'\' limit 1';            
+            Sobject details = Database.query(select_query);        
+            Pagereference orderPage=new Pagereference('/apex/Order_DetailPage?orderId='+details.id);
+            orderPage.setRedirect(true);
+            return orderPage;
+        }
+        return null;
+    }*/
+    public class invoiceWrapper{
+        public String customerID{get;set;}
+        public String customerName{get;set;}
+        public Decimal productID{get;set;}
+        public String salesperson{get;set;}
+        public String shipPostalCode{get;set;}
+    }
+    
+    public class customerWrapper{
+        public String customerID{get;set;}
+        public String contactName{get;set;}
+        public String contactTitle{get;set;}
+        public String phone{get;set;}
+    }
+    
+    public class orderWrapper{
+        public String customerID{get;set;}
+        public Decimal employeeID{get;set;}
+        public Datetime requiredDate{get;set;}
+        public String shipCountry{get;set;}
+        public String orderID{get;set;}
+    }
+
+}
+----------->
+        
+    </div>      
+</apex:page>

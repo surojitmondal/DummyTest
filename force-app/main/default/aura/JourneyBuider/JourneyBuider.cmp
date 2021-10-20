@@ -1,0 +1,30 @@
+<aura:component description = "Test Component" implements="force:appHostable,flexipage:availableforAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickAction" access="global">
+    <aura:attribute name="newJourneyStep" type="Object"/>
+    <aura:attribute name="simpleJourneyStep" type="Object"/>
+    <aura:attribute name="stepOptions" type="List" default="[{'label': 'Mailer', 'value': 'Mailer'},
+                                                            {'label':'Email','value': 'Email'},
+                                                            {'label':'Task','value': 'Task'}]"/>
+    <aura:attribute name="stepOptionValue" type="String" />
+    <force:recordData aura:id="jnyStepRecordCreator"
+                      layoutType="FULL"
+                      targetRecord="{!v.newJourneyStep}"
+                      targetFields="{!v.simpleJourneyStep}"
+                      targetError="{!v.newJnyStepError}" />
+    <!-- Display the new contact form -->
+    <div class = "create JourneyStep">
+    <lightning:card iconName="action:new_contact" title="Create JourneyStep">
+        <div class="slds-p-horizontal--small slds-size_1-of-2">
+            <lightning:radioGroup name="JourneyStepType"
+                                  label="Journey Step Type"
+                                  options="{!v.stepOptions}"
+                                  value="{!v.stepOPtionValue}"
+                                  type="radio"
+                                  class="customRadioCls"
+                                  />
+        </div>
+        </lightning:card>
+    
+    
+    
+    </div>
+</aura:component>

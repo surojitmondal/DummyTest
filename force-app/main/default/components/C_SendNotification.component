@@ -1,0 +1,5 @@
+<apex:component controller="C_SendNotificationController" access="global">
+    <apex:attribute name="relatedToId" assignTo="{!targetObjectId}" type="String" description="Notification"/>
+    <apex:attribute name="recipientId" assignTo="{!recipientUserId}" type="String" description="Notification Recipient"/>
+    Total amount is {!relatedToId}
+</apex:component>

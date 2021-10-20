@@ -1,0 +1,12 @@
+<apex:page >
+<div class="slds-tabs_default">
+  <ul class="slds-tabs_default__nav" role="tablist">
+    <li title="Item One" class="slds-tabs_default__item slds-is-active" role="presentation"><a tabindex="0" class="slds-tabs_default__link" id="tab-default-1__item" role="tab" aria-selected="true" aria-controls="tab-default-1" href="javascript:void(0);">Item One</a></li>
+    <li title="Item Two" class="slds-tabs_default__item" role="presentation"><a tabindex="-1" class="slds-tabs_default__link" id="tab-default-2__item" role="tab" aria-selected="false" aria-controls="tab-default-2" href="javascript:void(0);">Item Two</a></li>
+    <li title="Item Three" class="slds-tabs_default__item" role="presentation"><a tabindex="-1" class="slds-tabs_default__link" id="tab-default-3__item" role="tab" aria-selected="false" aria-controls="tab-default-3" href="javascript:void(0);">Item Three</a></li>
+  </ul>
+  <div class="slds-tabs_default__content slds-show" id="tab-default-1" role="tabpanel" aria-labelledby="tab-default-1__item">Item One Content</div>
+  <div class="slds-tabs_default__content slds-hide" id="tab-default-2" role="tabpanel" aria-labelledby="tab-default-2__item">Item Two Content</div>
+  <div class="slds-tabs_default__content slds-hide" id="tab-default-3" role="tabpanel" aria-labelledby="tab-default-3__item">Item Three Content</div>
+</div>
+</apex:page>

@@ -1,0 +1,38 @@
+<template>
+    <!-- <div class="slds-modal_large"> -->
+    <!-- <div class="slds-modal__container"> -->
+    <header class="slds-modal__header">
+        <h1>Request Written Consent?</h1>
+    </header>
+    <div class="slds-modal__content slds-p-around_medium">
+        <h3><b>Would you like to request Written Consent for this Account?</b></h3>
+        <lightning-input type="date" name="inputDate" data-id="reuestedStartDate" label="" placeholder="MM/DD/YYYY"
+            min={todaysDate} message-when-value-missing="Requested Start Date cannot be blank" required>
+        </lightning-input>
+    </div>
+    <footer class="slds-modal__footer">
+        <lightning-button-group>
+            <lightning-button variant="brand" data-id="submitButton" disabled={isSubmitActionDisabled} label="Submit"
+                onclick={handleSubmit}>
+            </lightning-button>
+            <lightning-button data-id="journeyCancel" label="Cancel" onclick={handleCancel}>
+            </lightning-button>
+        </lightning-button-group>
+    </footer>
+    <lightning-record-edit-form object-api-name="Contact" class="slds-hide" data-id="editForm">
+        <lightning-messages>
+        </lightning-messages>
+        <lightning-output-field field-name="requestedEndDate__c" value={requestedEndDate}>
+        </lightning-output-field>
+        <lightning-input-field field-name="FirstName">
+        </lightning-input-field>
+        <lightning-input-field field-name="LastName">
+        </lightning-input-field>
+        <lightning-input-field field-name="Email">
+        </lightning-input-field>
+        <lightning-button class="slds-m-top_small" variant="brand" type="submit" name="update" label="Update">
+        </lightning-button>
+    </lightning-record-edit-form>
+    <!-- </div> -->
+    <!-- </div> -->
+</template>

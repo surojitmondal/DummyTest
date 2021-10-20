@@ -1,0 +1,38 @@
+<aura:component  controller="JourneyStepClass" implements="force:appHostable,flexipage:availableforAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickAction" access="global" >
+	<aura:attribute name="newJourneyStep" type="Object" />
+    <aura:attribute name="simpleJourneyStep" type="Object" />  	
+    <aura:attribute name="strMsg" type="String" />
+    <aura:attribute name="Jny" type="Journey__c" default="{'sobjectType': 'Journey__c'}"/>
+    <!-- Make the mailer radio button as default checked from the component for now -->
+	<aura:attribute name="stepOptions" type="List" default="[{'label': 'Mailer', 'value': 'Mailer'}]" />
+	<aura:attribute name="steOptionValue" type="String" default="Mailer" />
+	
+<!-- Display the new Journey Step -->
+	<div class = "createJourneyStep">
+    <lightning:card iconName="action:new_contact" title="Create JourneyStep">
+        <div class="slds-p-horizontal--small slds-size_1-of-2">
+        <lightning:radioGroup name="journeyStepType"
+                              label="Journey Step Type"
+                              options="{!v.stepOptions}"
+                              value="{!v.steOptionValue}"
+                              type="radio"
+                              checked="true"
+                              class="customRadioCls"
+                              />
+            <br />
+            <lightning:input type="radio" label="Red" name="red" value="red" checked="true" />
+            <lightning:input type="radio" label="Blue" name="blue" value="blue" />
+            <!-- this field we can increment from 0 to any number but should not be decremented below 0 -->
+            <span class="required">*</span>
+            <lightning:input type="number" name="daysNum" aura:id="jnyStepDaysNum" label="Days Num" />           
+            {!v.strMsg}
+            <br />
+            <!-- Before clicking the below url , there must be some value in the above field.Need validation for that -->
+            <h1>
+            <a onclick = "{!c.queryJourneyRecord}" style="width:100%;">Continue to Letter Selection</a>
+            </h1>                              
+        </div>        
+        </lightning:card>
+    </div>    
+    
+</aura:component>

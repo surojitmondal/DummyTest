@@ -1,0 +1,20 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,lightning:isUrlAddressable" access="global" >
+    <lightning:notificationsLibrary aura:id="alertToast"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="sobjecttype" type="String" default="{!v.sObjectName}"/>
+    <div class="slds-notify_container slds-is-absolute">
+        <div class="slds-notify slds-notify_toast slds-theme_warning" role="alert">
+            <span class="slds-assistive-text">warning</span>
+            <span class="slds-icon_container slds-icon-utility-warning slds-m-right_small slds-no-flex slds-align-top" title="Description of icon when needed">
+                <lightning:icon iconName="utility:warning" size="small" alternativeText="Warning!"/>
+            </span>
+            <div class="slds-notify__content">
+                <h2 class="slds-text-heading_small ">Consent is about to expire! - If you would like to request consent 
+                    <a href="javascript:void(0);">click here!</a>.</h2>
+            </div>
+            <div class="slds-notify__close">
+                <lightning:icon iconName="utility:close" size="small" alternativeText="Close"/>
+            </div>
+        </div>
+    </div>
+</aura:component>

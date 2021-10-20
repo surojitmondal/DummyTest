@@ -1,0 +1,58 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <fieldset class="slds-form-element">
+        <legend class="slds-form-element__legend slds-form-element__label">Checkbox Group label</legend>
+        <div class="slds-form-element__control">
+            <span class="slds-radio">
+                <input type="radio" id="radio-1" name="options" value="on"/>
+                <label class="slds-radio__label" for="radio-1" onclick="{!c.toggle}">
+                    <span class="slds-radio_faux" aura:id="radio-1"></span>
+                    <span class="slds-form-element__label">show all time charges awaiting my review</span>
+                </label>
+            </span>            
+        </div>
+    </fieldset>
+    <div class="toggle" aura:id="ShowOptions">        
+        <span class="slds-radio">
+            <input type="radio" id="radio-1a" name="addoptions" value="on" />
+            <label class="slds-radio__label" for="radio-1a">
+                <span class="slds-radio_faux"></span>
+                <span class="slds-form-element__label">show Unapproved only</span>
+            </label>
+        </span>
+        <span class="slds-radio">
+            <input type="radio" id="radio-1b" name="addoptions" value="on" />
+            <label class="slds-radio__label" for="radio-1b">
+                <span class="slds-radio_faux"></span>
+                <span class="slds-form-element__label">show all time charges</span>
+            </label>
+        </span>        
+    </div>
+    
+    <fieldset class="slds-form-element">
+        <div class="slds-form-element__control">
+            <span class="slds-radio" aura:id="radio-2" >
+                <input type="radio" id="radio-2" name="options" value="on"/>
+                <label class="slds-radio__label" for="radio-2" onclick="{!c.toggle1}">
+                    <span class="slds-radio_faux" ></span>
+                    <span class="slds-form-element__label">show all time charges to be review by</span>
+                </label>
+            </span>            
+        </div>
+    </fieldset>
+    <div class="slds-form-element toggle1" aura:id="ShowOptions1">        
+        <span class="slds-radio">
+            <input type="radio" id="radio-2a" name="addoptions" value="on" />
+            <label class="slds-radio__label" for="radio-2a">
+                <span class="slds-radio_faux"></span>
+                <span class="slds-form-element__label">show Unapproved only</span>
+            </label>
+        </span>
+        <span class="slds-radio">
+            <input type="radio" id="radio-2b" name="addoptions" value="on" />
+            <label class="slds-radio__label" for="radio-2b">
+                <span class="slds-radio_faux"></span>
+                <span class="slds-form-element__label">show all time charges</span>
+            </label>
+        </span>        
+    </div>
+</aura:component>
